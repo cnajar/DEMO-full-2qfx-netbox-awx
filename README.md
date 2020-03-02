@@ -33,12 +33,13 @@ A netbox server and a awx server will be spanw too.
 
 Ansible is used to preconfigured both VQFX with an IP address on their interfaces
 
-**1) Install Juniper vqfx10k boxes**
+**1) Install Juniper vqfx10k and linux boxes**
 
 ```
 
 vagrant box add juniper/vqfx10k-re
 vagrant box add juniper/vqfx10k-pfe
+vagrant box add hashicorp/bionic64
 ```
 
 
@@ -63,6 +64,9 @@ vagrant box add juniper/vqfx10k-pfe
 
 vagrant ssh vqfx1
 vagrant ssh vqfx2
+
+vagrant ssh awx
+vagrant ssh netbox
 ```
 
 
@@ -73,3 +77,13 @@ vagrant ssh vqfx2
 ansible-playbook deploy.bgp.yaml
 ansible-playbook get.status.yaml
 ```
+
+**7) Populate netbox**
+
+```
+python3 scripts/populate-netbox.py
+```
+
+**8) AWX**
+
+...
