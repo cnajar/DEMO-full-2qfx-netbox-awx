@@ -1,8 +1,9 @@
 
-# DEMO-full-2qfx
+# DEMO-full-2qfx-netbox-awx
 
 This Vagrantfile will spawn 2 instances of VQFX (Full) each with 1 Routing Engine and 1 PFE VM  
 Both VQFX will be connected back to back with IP address pre-configured on their interfaces
+A netbox server and a awx server will be spanw too.
 
 # Requirement
 
@@ -12,20 +13,21 @@ Both VQFX will be connected back to back with IP address pre-configured on their
 
 ### Tools
  - Ansible for provisioning (except for windows)
+ - Pipenv
  - Junos module for Ansible
 
 # Topology
 
-        em0|                        em0|
-    =============  xe-0/0/[0-5] =============
-    |           | ------------- |           |
-    |   vqfx1   | ------------- |   vqfx2   |
-    |           | ------------- |           |
-    =============               =============
-        em1|                        em1|
-    =============               =============
-    | vqfx1-pfe |               | vqfx1-pfe |
-    =============               =============
+           em0|                        em0|
+       =============  xe-0/0/[0-5] =============
+       |           | ------------- |           |
+       |   vqfx1   | ------------- |   vqfx2   |
+       |           | ------------- |           |
+       =============               =============
+           em1|                        em1|
+       =============               =============
+       | vqfx1-pfe |               | vqfx1-pfe |
+       =============               =============
 
 # Provisioning / Configuration
 

@@ -21,10 +21,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         awx.vm.network "private_network", ip: "192.168.33.21"
         awx.vm.network 'private_network', ip: "10.10.66.2", virtualbox__intnet: "#{UUID}_awx_vqfx1"
         awx.vm.network 'private_network', ip: "10.10.67.2", virtualbox__intnet: "#{UUID}_awx_vqfx2"
-        awx.vm.provision "shell", inline: <<-SHELL
-          apt-get update
-          apt-get install -y lldpd ntp
-        SHELL
+#        awx.vm.provision "shell", inline: <<-SHELL
+#          apt-get update
+#          apt-get install -y lldpd ntp
+#        SHELL
     end
 
     ######
@@ -37,10 +37,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         netbox.vm.network "private_network", ip: "192.168.33.20"
         netbox.vm.network 'private_network', auto_config: false, nic_type: '82540EM', virtualbox__intnet: "#{UUID}_netbox_vqfx1"
         netbox.vm.network 'private_network', auto_config: false, nic_type: '82540EM', virtualbox__intnet: "#{UUID}_netbox_vqfx2"
-        netbox.vm.provision "shell", inline: <<-SHELL
-          apt-get update
-          apt-get install -y lldpd ntp
-        SHELL
+#        netbox.vm.provision "shell", inline: <<-SHELL
+#          apt-get update
+#          apt-get install -y lldpd ntp
+#        SHELL
     end
 
     config.ssh.insert_key = false
@@ -112,9 +112,8 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
             "vqfx10kpfe"  => ["vqfx1-pfe", "vqfx2-pfe"],
             "all:children" => ["srv", "vqfx10k", "vqfx10kpfe"]
         }
-        ansible.playbook = "pb.conf.all.commit.yaml"
-	ansible.playbook = "pb.server.base.yaml"
+	ansible.playbook = "pb.INIT-PLAYBOOK.yaml"
 	# because pipenv
-#	ansible.extra_vars = { ansible_python_interpreter:"`pipenv --py`"}
+	#ansible.extra_vars = { ansible_python_interpreter:"`pipenv --py`"}
     end
 end
