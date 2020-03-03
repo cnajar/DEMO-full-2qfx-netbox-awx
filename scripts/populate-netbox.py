@@ -96,7 +96,7 @@ all_devices = leaf_list + spine_list
 ############################################################################
 # Connect to NetBox
 nb = pynetbox.api(config.url, token=config.token)
-logger.warning("Connection to Netbox API success")
+logger.warning("-- Connection to Netbox API success --")
 
 # Create new Site
 new_site = nb.dcim.sites.get(slug=config.dc_slug)
@@ -318,3 +318,6 @@ for dev in all_devices:
             new_device.local_context_data.update({k:v})
     new_device.save()
     logger.warning('** New device %s populated in Netbox ** ' % (dev['hostname']))
+
+print("The script passed succesfully. Well done!")
+logger.warning('-- The script passed succesfully. Well done! -- ')
