@@ -225,7 +225,7 @@ if not new_platform_junos:
 
 
 # NetBox Prefixes - Underlay P2P
-logger.warning("NetBox Prefixes - Underlay P2P")
+logger.warning("Creating NetBox Prefixes - Underlay P2P")
 for j in range(num_spines):
     nb.ipam.prefixes.create(
         prefix=f'{p2p_range}{j+1}.0/24',
@@ -239,19 +239,19 @@ for j in range(num_spines):
         )
         n+=2
 # NetBox Prefixes - Loopback0
-logger.warning("NetBox Prefixes - Loopback0")
+logger.warning("Creating NetBox Prefixes - Loopback0")
 nb.ipam.prefixes.create(
         prefix=f'{lo0_range}0/24',
         description=f'Underlay Loopbacks'
     )
 # NetBox Prefixes - Loopback1
-#logger.warning("NetBox Prefixes - Loopback1")
+#logger.warning("Creating NetBox Prefixes - Loopback1")
 #nb.ipam.prefixes.create(
 #        prefix=f'{lo1_range}0/24',
 #    )
 
 # NetBox Prefixes - IBGP Underlay
-logger.warning("NetBox Prefixes - IBGP Underlay")
+logger.warning("Creating NetBox Prefixes - IBGP Underlay")
 nb.ipam.prefixes.create(
         prefix=f'{ibgp_range}0/24',
         description=f'Underlay IBGP'
@@ -274,7 +274,7 @@ for dev in all_devices:
         },
         local_context_data = {}
     )
-    logger.warning('Creating device %s ' % (dev['hostname']))
+    logger.warning('* Creating device %s ' % (dev['hostname']))
 
     # Assign IP Addresses to Interfaces
     for intf in dev['interfaces']:
