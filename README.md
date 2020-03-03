@@ -78,12 +78,20 @@ ansible-playbook deploy.bgp.yaml
 ansible-playbook get.status.yaml
 ```
 
-**7) Populate netbox**
+**7) Netbox**
+
+Create API Token at : http://YOUR_NETBOX_IP/admin/users/token/add/
+
+Create "bgp_asn" (integer) Custom Filed at : http://YOUR_NETBOX_IP/admin/extras/customfield/add/ 
+This Custom Field should be an *integer* type and applies to *dcim.devices* object
+
+
+**8) Populate netbox**
 
 ```
 python3 scripts/populate-netbox.py
 ```
 
-**8) AWX**
+**9) AWX**
 
 ...
