@@ -1,3 +1,4 @@
+import confignetbox as config
 import pynetbox
 from pprint import pprint
 def search_dict_list(a_val, b_val, c_list):
@@ -5,16 +6,16 @@ def search_dict_list(a_val, b_val, c_list):
         if line['hostname'] == a_val:
             return line[b_val]
 # Define Parent Variables that will be used to auto-generate and assign values
-num_spines = 2
-num_leafs = 4
-p2p_range = '10.0.'
-lo0_range = '10.0.250.'
-lo1_range = '10.0.255.'
-ibgp_range = '10.0.3.'
-mgmt_range = '10.4.2.'
-ibgp_vlan = '4091'
-asn_start = 65000
-leaf_int_mlag_peer = 'ae0'
+num_spines = config.num_spines
+num_leafs = config.num_leafs
+p2p_range = config.p2p_range
+lo0_range = config.lo0_range
+lo1_range = config.lo1_range
+ibgp_range = config.ibgp_range
+mgmt_range = config.mgmt_range
+ibgp_vlan = config.ibgp_vlan
+asn_start = config.asn_start
+leaf_int_mlag_peer = config.leaf_int_mlag_peer
 
 # Generate key/val for Leafs
 leaf_list = []
@@ -23,7 +24,7 @@ n = 0
 for i in range(num_leafs):
     id = i+1
     device = {}
-    device['device_role'] = {'name': 'Leaf'}
+    device['device_role'] = {'name': 'LEAF'}
     device['interfaces'] = []
     device['bgp_neighbors'] = []
     device['evpn_neighbors'] = []
@@ -42,7 +43,8 @@ for i in range(num_leafs):
     for j in range(num_spines):
         # popov
         #device['interfaces'].append({'interface':f'xe-0/0/{j+11}', 'address':f'{p2p_range}{j+1}.{n+1}', 'mask':'/31', 'description':f'spine{j+1}'})
-        device['interfaces'].append({'interface':f'xe-0/0/{j+10}', 'address':f'{p2p_range}{j+1}.{n+1}', 'mask':'/31', 'description':f'spine{j+1}'})
+        #device['interfaces'].append({'interface':f'xe-0/0/{j+10}', 'address':f'{p2p_range}{j+1}.{n+1}', 'mask':'/31', 'description':f'spine{j+1}'})
+        device['interfaces'].append({'interface':f'xe-0/0/{j+4}', 'address':f'{p2p_range}{j+1}.{n+1}', 'mask':'/31', 'description':f'spine{j+1}'})
         device['bgp_neighbors'].append({'neighbor':f'{p2p_range}{j+1}.{n}', 'remote_as': asn_start, 'state': 'present'})
         device['evpn_neighbors'].append({'neighbor':f'{lo0_range}{j+1}', 'remote_as': asn_start, 'state': 'present'})
     device['interfaces'].append({'interface': f'Vlan{ibgp_vlan}', 'address':f'{ibgp_range}{i}', 'mask':'/31', 'description':'IBGP Underlay SVI'})
@@ -58,7 +60,7 @@ asn = asn_start
 for i in range(num_spines):
     id = i+1
     device = {}
-    device['device_role'] = {'name': 'Spine'}
+    device['device_role'] = {'name': 'SPINE'}
     device['interfaces'] = []
     device['bgp_neighbors'] = []
     device['evpn_neighbors'] = []
@@ -88,29 +90,127 @@ all_devices = leaf_list + spine_list
 # NetBox Tasks
 ############################################################################
 # Connect to NetBox
-nb = pynetbox.api(
-    'http://192.168.33.10',
-    token='5bc7e6e1e045cea46785f44d1e815b6c214bdaf3'
-)
+nb = pynetbox.api(config.url, token=config.token)
+
 # Create new Site
-new_site = nb.dcim.sites.get(slug='junos-data')
+new_site = nb.dcim.sites.get(slug=config.dc_slug)
 if not new_site:
     new_site = nb.dcim.sites.create(
-        name='Junos Lab Datacenter',
-        slug='junos-lab-dc',
+        name=config.dc_name,
+        slug=config.dc_slug,
     )
-# Create Device Role 'Leaf'
-nb.dcim.device_roles.create(
-    name='Leaf',
-    slug='leaf',
-    color='2196f3'
-)
-# Create Device Role 'Spine'
-nb.dcim.device_roles.create(
-    name='Spine',
-    slug='spine',
-    color='3f51b5'
-)
+# Create Device Role 'LEAF'
+new_role_leaf = nb.dcim.device_roles.get(slug=config.leaf_slug)
+if not new_role_leaf:
+    new_role_leaf = nb.dcim.device_roles.create(
+        name=config.leaf_name,
+        slug=config.leaf_slug,
+        color=config.leaf_color
+    )
+# Create Device Role 'SPINE'
+new_role_spine = nb.dcim.device_roles.get(slug=config.spine_slug)
+if not new_role_spine:
+    new_role_spine = nb.dcim.device_roles.create(
+        name=config.spine_name,
+        slug=config.spine_slug,
+        color=config.spine_color
+    )
+
+# Create Manufacturer Juniper
+new_manufacturer_juniper = nb.dcim.manufacturers.get(slug=config.manufacturer_slug)
+if not new_manufacturer_juniper:
+    new_manufacturer_juniper = nb.dcim.manufacturers.create(
+        name=config.manufacturer_name,
+        slug=config.manufacturer_slug
+    )
+    
+
+# Create Device Type 'vqfx10k'
+new_device_type_vqfx10k = nb.dcim.device_types.get(model=config.device_type_vqfx10k)
+if not new_device_type_vqfx10k:
+    new_device_type_vqfx10k = nb.dcim.device_types.create(
+        manufacturer=new_manufacturer_juniper.id,
+        model=config.device_type_vqfx10k,
+        slug=config.device_type_vqfx10k
+    )
+
+# Create Interfaces for vqfx10k device type
+# xe-0/0/[0-11] - 10gbase-x-sfpp   ( SFP+ (10GE)  ) 
+# em0 em1 em5 - Virtual ( Management only )
+# /opt/netbox/netbox/dcim/models/__init__.py
+#         if self.interface_templates.exists():
+#            data['interfaces'] = [
+#                {
+#                    'name': c.name,
+#                    'type': c.type,
+#                    'mgmt_only': c.mgmt_only,
+#                }
+#                for c in self.interface_templates.all()
+#            ]
+#
+#new_interfaces_vqfx10k = nb.dcim.interface_templates.get(slug=new_device_type_vqfx10k.slug)
+new_interfaces_vqfx10k = nb.dcim.interface_templates.filter(slug=new_device_type_vqfx10k.slug)
+if not new_interfaces_vqfx10k:
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='em0',
+        type='virtual',
+        mgmt_only=True
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='em1',
+        type='virtual',
+        mgmt_only=True
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='em5',
+        type='virtual',
+        mgmt_only=True
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='xe-0/0/0',
+        type='10gbase-x-sfpp'
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='xe-0/0/1',
+        type='10gbase-x-sfpp'
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='xe-0/0/2',
+        type='10gbase-x-sfpp'
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='xe-0/0/3',
+        type='10gbase-x-sfpp'
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='xe-0/0/4',
+        type='10gbase-x-sfpp'
+    )
+    new_interfaces_vqfx10k = nb.dcim.interface_templates.create(
+        device_type=new_device_type_vqfx10k.id,
+        name='xe-0/0/5',
+        type='10gbase-x-sfpp'
+    )
+
+# Create Platform 'junos'
+new_platform_junos = nb.dcim.platforms.get(slug=config.platform)
+if not new_platform_junos:
+    new_platform_junos = nb.dcim.platforms.create(
+        name=config.platform,
+        slug=config.platform,
+        manufacturer=new_manufacturer_juniper.id
+    )
+
+
+
 # NetBox Prefixes - Underlay P2P
 for j in range(num_spines):
     nb.ipam.prefixes.create(
@@ -153,7 +253,7 @@ for dev in all_devices:
         },
         device_role=dev['device_role'],
         custom_fields={
-            'bgp_asn': dev['asn']
+            'bgp_asn' : dev['asn']
         },
         local_context_data = {}
     )
@@ -169,7 +269,8 @@ for dev in all_devices:
                 name=intf['interface'],
                 form_factor=0,
                 description=intf['description'],
-                device=new_device.id
+                device=new_device.id,
+                type=0
             )
         else:
             # Get interface id from NetBox

@@ -88,6 +88,8 @@ This Custom Field should be an **integer** type and applies to **dcim.devices** 
 
 **8) Populate netbox**
 
+- [x] Edit *script/config-netbox.py*, update url, token and other variables if needed. Then, run *populate-netbox.py*
+
 ```
 python3 scripts/populate-netbox.py
 ```
