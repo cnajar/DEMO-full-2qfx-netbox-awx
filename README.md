@@ -80,9 +80,9 @@ ansible-playbook get.status.yaml
 
 **7) Netbox**
 
-- [x] Create API Token at : [http://YOUR_NETBOX_IP/admin/users/token/add/](http://YOUR_NETBOX_IP/admin/users/token/add/).
+- [x] Create API Token: [http://YOUR_NETBOX_IP/admin/users/token/add/](http://YOUR_NETBOX_IP/admin/users/token/add/).
 
-- [x] Create "bgp_asn" (integer) Custom Filed at : [http://YOUR_NETBOX_IP/admin/extras/customfield/add/](http://YOUR_NETBOX_IP/admin/extras/customfield/add/).  
+- [x] Create **bgp_asn**  Custom Field: [http://YOUR_NETBOX_IP/admin/extras/customfield/add/](http://YOUR_NETBOX_IP/admin/extras/customfield/add/).  
 This Custom Field should be an **integer** type and applies to **dcim.devices** object.
 
 
