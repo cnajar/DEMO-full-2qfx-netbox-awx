@@ -1,8 +1,11 @@
 # confignetbox
 url = 'http://192.168.33.20/'
-token = 'b5f925bba30fe1e408e9931e91390548c79819f9'
+token = 'cf489e2856f66492842d49f82354f991a4e2e2d7'
 dc_slug = 'junos-datacenter'
 dc_name = 'Junos Lab Datacenter'
+
+log_path = '/tmp/populate-netbox.log'
+
 
 leaf_slug = 'leaf'
 leaf_name = 'LEAF'
@@ -21,7 +24,7 @@ custom_field_bgp = 'bgp_asn'
 
 #---
 num_spines = 2
-num_leafs = 4
+num_leafs = 1
 p2p_range = '10.0.'
 lo0_range = '10.0.250.'
 lo1_range = '10.0.255.'
