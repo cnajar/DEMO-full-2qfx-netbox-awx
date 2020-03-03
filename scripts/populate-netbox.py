@@ -105,7 +105,8 @@ if not new_site:
         name=config.dc_name,
         slug=config.dc_slug,
     )
-    logger.warning("Creating new Datacenter")
+    logger.warning('Adding new datacenter %s ' % (config.dc_slug))
+
 # Create Device Role 'LEAF'
 new_role_leaf = nb.dcim.device_roles.get(slug=config.leaf_slug)
 if not new_role_leaf:
@@ -114,7 +115,8 @@ if not new_role_leaf:
         slug=config.leaf_slug,
         color=config.leaf_color
     )
-    logger.warning("Creating new LEAF role")
+    logger.warning("Adding new LEAF role")
+
 # Create Device Role 'SPINE'
 new_role_spine = nb.dcim.device_roles.get(slug=config.spine_slug)
 if not new_role_spine:
@@ -123,7 +125,7 @@ if not new_role_spine:
         slug=config.spine_slug,
         color=config.spine_color
     )
-    logger.warning("Creating new SPINE role")
+    logger.warning("Adding new SPINE role")
 
 # Create Manufacturer Juniper
 new_manufacturer_juniper = nb.dcim.manufacturers.get(slug=config.manufacturer_slug)
@@ -132,7 +134,7 @@ if not new_manufacturer_juniper:
         name=config.manufacturer_name,
         slug=config.manufacturer_slug
     )
-    logger.warning("Creating new Manufacturer Juniper")
+    logger.warning("Adding new Manufacturer Juniper")
     
 
 # Create Device Type 'vqfx10k'
@@ -143,7 +145,7 @@ if not new_device_type_vqfx10k:
         model=config.device_type_vqfx10k,
         slug=config.device_type_vqfx10k
     )
-    logger.warning("Creating new device_type vqfx10k")
+    logger.warning("Adding new device_type vqfx10k")
 
 # Create Interfaces for vqfx10k device type
 # xe-0/0/[0-11] - 10gbase-x-sfpp   ( SFP+ (10GE)  ) 
@@ -210,7 +212,7 @@ if not new_interfaces_vqfx10k:
         name='xe-0/0/5',
         type='10gbase-x-sfpp'
     )
-    logger.warning("Creating Interfaces Template for vqfx10k device type")
+    logger.warning("Adding Interfaces Template for vqfx10k device type")
 
 # Create Platform 'junos'
 new_platform_junos = nb.dcim.platforms.get(slug=config.platform)
@@ -220,12 +222,12 @@ if not new_platform_junos:
         slug=config.platform,
         manufacturer=new_manufacturer_juniper.id
     )
-    logger.warning("Creating Platform 'junos'")
+    logger.warning("Adding Platform 'junos'")
 
 
 
 # NetBox Prefixes - Underlay P2P
-logger.warning("Creating NetBox Prefixes - Underlay P2P")
+logger.warning("Adding NetBox Prefixes - Underlay P2P")
 for j in range(num_spines):
     nb.ipam.prefixes.create(
         prefix=f'{p2p_range}{j+1}.0/24',
@@ -239,19 +241,19 @@ for j in range(num_spines):
         )
         n+=2
 # NetBox Prefixes - Loopback0
-logger.warning("Creating NetBox Prefixes - Loopback0")
+logger.warning("Adding NetBox Prefixes - Loopback0")
 nb.ipam.prefixes.create(
         prefix=f'{lo0_range}0/24',
         description=f'Underlay Loopbacks'
     )
 # NetBox Prefixes - Loopback1
-#logger.warning("Creating NetBox Prefixes - Loopback1")
+#logger.warning("Adding NetBox Prefixes - Loopback1")
 #nb.ipam.prefixes.create(
 #        prefix=f'{lo1_range}0/24',
 #    )
 
 # NetBox Prefixes - IBGP Underlay
-logger.warning("Creating NetBox Prefixes - IBGP Underlay")
+logger.warning("Adding NetBox Prefixes - IBGP Underlay")
 nb.ipam.prefixes.create(
         prefix=f'{ibgp_range}0/24',
         description=f'Underlay IBGP'
@@ -274,7 +276,7 @@ for dev in all_devices:
         },
         local_context_data = {}
     )
-    logger.warning('* Creating device %s ' % (dev['hostname']))
+    logger.warning('* Adding device %s ' % (dev['hostname']))
 
     # Assign IP Addresses to Interfaces
     for intf in dev['interfaces']:
@@ -290,7 +292,7 @@ for dev in all_devices:
                 device=new_device.id,
                 type=0
             )
-            logger.warning('Creating interface %s for device %s ' % (intf['interface'], dev['hostname']))
+            logger.warning('Adding interface %s for device %s ' % (intf['interface'], dev['hostname']))
         else:
             # Get interface id from NetBox
             nbintf = nb.dcim.interfaces.get(device=dev['hostname'], name=intf['interface'])
