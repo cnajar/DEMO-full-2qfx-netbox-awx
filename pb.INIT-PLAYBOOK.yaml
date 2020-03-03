@@ -57,7 +57,7 @@
     - nginx
     - gunicorn
   
-  tasks:
-    - name: Get pipenv --py var
-      command: 'pipenv --py'
-      register: pipenvpy
+#  tasks:
+#    - name: Get pipenv --py var
+#      command: 'pipenv --py'
+#      register: pipenvpy
