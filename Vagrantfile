@@ -21,10 +21,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         awx.vm.network "private_network", ip: "192.168.33.21"
         awx.vm.network 'private_network', ip: "10.10.66.2", virtualbox__intnet: "#{UUID}_awx_vqfx1"
         awx.vm.network 'private_network', ip: "10.10.67.2", virtualbox__intnet: "#{UUID}_awx_vqfx2"
-#        awx.vm.provision "shell", inline: <<-SHELL
-#          apt-get update
-#          apt-get install -y lldpd ntp
-#        SHELL
+        awx.vm.provider "virtualbox" do |v|
+           v.customize ["modifyvm", :id, "--memory", "2048"]
+        end
     end
 
     ######
